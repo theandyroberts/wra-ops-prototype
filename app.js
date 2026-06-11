@@ -53,6 +53,10 @@ const screens = [...document.querySelectorAll('.screen')];
 const navs = [...document.querySelectorAll('.nav')];
 let activeJob = jobs[0];
 let activeLocationId = 'downtown-rooftop';
+let locationMode = 'overview';
+let activeLocationSection = 'overview';
+let resourceView = 'calendar';
+let resourceGroup = 'resource';
 
 const jobLocations = [
   {
@@ -104,6 +108,17 @@ const jobLocations = [
 
 function currentLocation() {
   return jobLocations.find(l => l.id === activeLocationId) || jobLocations[0];
+}
+
+function locationIndex() {
+  return jobLocations.findIndex(l => l.id === activeLocationId);
+}
+
+function cycleLocation(direction) {
+  const currentIndex = locationIndex();
+  const nextIndex = (currentIndex + direction + jobLocations.length) % jobLocations.length;
+  activeLocationId = jobLocations[nextIndex].id;
+  activeLocationSection = 'overview';
 }
 
 function badge(status) {
@@ -375,60 +390,167 @@ function crewTab() {
 }
 
 function locationsTab() {
-  const selected = currentLocation();
+  return locationMode === 'detail' ? locationDetailView() : locationOverviewView();
+}
+
+function locationOverviewView() {
   return `
-    <div class="locations-workspace">
-      <div class="panel location-list-panel">
-        <div class="panel-head"><h2>Locations</h2><button class="btn">Add Location</button></div>
+    <div class="panel">
+      <div class="panel-head"><h2>Locations</h2><button class="btn">Add Location</button></div>
+      <div class="location-overview-list">
         ${jobLocations.map(location => `
-          <button class="location-block ${location.id === selected.id ? 'active' : ''}" data-location-select="${location.id}">
-            <div class="location-copy">
+          <button class="location-row-card" data-location-open="${location.id}">
+            <div class="location-row-info">
               <h3>${location.name}</h3>
               <p class="muted">${location.address}</p>
+              <p><strong>GPS:</strong> ${location.gps}</p>
               <div class="location-meta">${badge(location.airspace)} ${badge(location.poa)} ${badge(location.docs)}</div>
             </div>
-            <div class="map small">${location.mapLabel}</div>
+            <div class="map location-row-map">${location.mapLabel}</div>
           </button>
         `).join('')}
       </div>
-      <div class="panel selected-location-panel">
-        <div class="panel-head"><h2>${selected.name}</h2><button class="btn primary" data-job-tab-link="poa">Create POA</button></div>
-        <div class="panel-body">
-          <div class="detail-stack">
-            <div>
-              <p><strong>Address:</strong> ${selected.address}</p>
-              <p><strong>GPS:</strong> ${selected.gps}</p>
-              <p><strong>Airspace:</strong> ${selected.context}</p>
-              <p><strong>Authorization:</strong> ${selected.authorization}</p>
-            </div>
-            <div class="map">${selected.mapLabel}</div>
+    </div>
+  `;
+}
+
+function locationDetailView() {
+  const selected = currentLocation();
+  const index = locationIndex() + 1;
+  const sections = [
+    ['overview', 'Overview'],
+    ['maps', 'Maps & Airspace'],
+    ['poa', 'POA Builder'],
+    ['paperwork', 'Paperwork'],
+    ['notes', 'Notes']
+  ];
+  return `
+    <div class="location-detail">
+      <div class="location-detail-head">
+        <button class="btn" data-location-back>Back to All Locations</button>
+        <div>
+          <p class="eyebrow">Location ${index} of ${jobLocations.length}</p>
+          <h2>${selected.name}</h2>
+          <p class="sub">${selected.address}</p>
+        </div>
+        <div class="actions">
+          <button class="btn" data-location-cycle="-1">Previous</button>
+          <button class="btn" data-location-cycle="1">Next</button>
+          <button class="btn primary" data-location-section="poa">Create POA</button>
+        </div>
+      </div>
+      <div class="tabs location-subtabs">
+        ${sections.map(([id, label]) => `
+          <button class="tab ${activeLocationSection === id ? 'active' : ''}" data-location-section="${id}">${label}</button>
+        `).join('')}
+      </div>
+      ${locationDetailSection(selected)}
+    </div>
+  `;
+}
+
+function locationDetailSection(location) {
+  if (activeLocationSection === 'maps') {
+    return `
+      <div class="grid two">
+        <div class="panel">
+          <div class="panel-head"><h2>Saved Maps</h2><button class="btn">Open Google Maps</button></div>
+          <div class="panel-body">
+            <div class="map">${location.mapLabel}</div>
+            <br>
+            <div class="map map-chart">Airspace chart / UASFM layer</div>
           </div>
-          <div class="location-action-row">
-            <button class="btn">Open Maps</button>
-            <button class="btn">Recheck Airspace</button>
-            <button class="btn">Attach Location Form</button>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Airspace / Pilot Email</h2><button class="btn primary">Copy Pilot Email</button></div>
+          <div class="panel-body">
+            <p><strong>UASFM max altitude:</strong> ${location.uasfm}</p>
+            <p><strong>Airspace context:</strong> ${location.context}</p>
+            <p><strong>TFR status:</strong> ${location.tfr}</p>
+            <p><strong>Authorization:</strong> ${location.authorization}</p>
+            <p><strong>Requested altitude:</strong> ${location.requestedAltitude}</p>
+            <div class="input" style="min-height: 110px;">Subject: LAANC details - Radical / Lexus - ${location.name}<br><br>Generated pilot email with job, location, GPS, date blocks, altitude, TFR status, aircraft list, and producer contact.</div>
           </div>
         </div>
       </div>
-      <div class="panel wide">
-        <div class="panel-head"><h2>Airspace / Pilot Email</h2><button class="btn primary">Copy Pilot Email</button></div>
-        <div class="panel-body">
-          <div class="grid two">
-            <div>
-              <p><strong>Location:</strong> ${selected.name}</p>
-              <p><strong>UASFM max altitude:</strong> ${selected.uasfm}</p>
-              <p><strong>Airspace context:</strong> ${selected.context}</p>
-              <p><strong>TFR status:</strong> ${selected.tfr}</p>
-              <p><strong>Authorization:</strong> ${selected.authorization}</p>
-              <p><strong>Requested altitude:</strong> ${selected.requestedAltitude}</p>
-            </div>
-            <div>
-              <p><strong>To:</strong> Drew Roberts</p>
-              <p><strong>Subject:</strong> LAANC details - Radical / Lexus - ${selected.name}</p>
-              <div class="input" style="min-height: 110px;">Generated email with job, location, GPS, date blocks, requested altitude, UASFM result, TFR status, pilot/aircraft list, and producer contact.</div>
+    `;
+  }
+
+  if (activeLocationSection === 'poa') {
+    return `
+      <div class="poa-layout">
+        <div class="panel">
+          <div class="panel-head"><h2>POA Text Details</h2></div>
+          <div class="panel-body">
+            <div class="field"><label>Location</label><div class="input">${location.name}</div></div><br>
+            <div class="field"><label>Pilots</label><div class="input">Drew Roberts, Colin Burgess</div></div><br>
+            <div class="field"><label>Activity</label><div class="input">Filming actors and scenery on a closed set.</div></div><br>
+            <div class="field"><label>Local Times</label><div class="input">Jun 24 0600-1800</div></div><br>
+            <div class="field"><label>Registered Aircraft</label><div class="input">Inspire 3 x3</div></div><br>
+            <div class="field"><label>Security</label><div class="input">Secure takeoff/landing zone. 30 ft perimeter.</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Map Annotation</h2><div class="actions"><button class="btn primary">Preview POA</button><button class="btn">Export PDF</button></div></div>
+          <div class="panel-body">
+            <div class="map">Annotated POA map for ${location.name}</div>
+            <div class="tool-row">
+              ${['Text','Circle','Polygon','Path','Arrow','Launch','Spotter','Restricted','Auto Legend'].map(t => `<button class="btn">${t}</button>`).join('')}
             </div>
           </div>
         </div>
+      </div>
+    `;
+  }
+
+  if (activeLocationSection === 'paperwork') {
+    return `
+      <div class="panel">
+        <div class="panel-head"><h2>Location Paperwork</h2><button class="btn">Attach Document</button></div>
+        <table class="table">
+          <thead><tr><th>Document</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>FilmLA Location Form</td><td>Permit</td><td>${badge('Draft')}</td><td><button class="btn">Open</button></td></tr>
+            <tr><td>Insurance COI Request</td><td>Insurance</td><td>${badge('Pending')}</td><td><button class="btn">Generate</button></td></tr>
+            <tr><td>Site Map Export</td><td>Supporting</td><td>${badge(location.poa)}</td><td><button class="btn">Export</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  if (activeLocationSection === 'notes') {
+    return `
+      <div class="panel">
+        <div class="panel-head"><h2>Location Notes</h2><button class="btn">Copy To Job Notes</button></div>
+        <div class="panel-body">
+          <div class="input" style="min-height: 180px;">Parking, basecamp, launch/landing restrictions, jurisdiction contacts, neighborhood notes, and prior-job notes for ${location.name}.</div>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="grid two">
+      <div class="panel">
+        <div class="panel-head"><h2>Overview</h2></div>
+        <div class="panel-body">
+          <p><strong>Address:</strong> ${location.address}</p>
+          <p><strong>GPS:</strong> ${location.gps}</p>
+          <p><strong>Airspace:</strong> ${location.context}</p>
+          <p><strong>Authorization:</strong> ${location.authorization}</p>
+          <p><strong>POA:</strong> ${location.poa}</p>
+          <p><strong>Documents:</strong> ${location.docs}</p>
+          <div class="location-action-row">
+            <button class="btn" data-location-section="maps">Maps & Airspace</button>
+            <button class="btn primary" data-location-section="poa">Create POA</button>
+            <button class="btn" data-location-section="paperwork">Paperwork</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Primary Map</h2></div>
+        <div class="panel-body"><div class="map">${location.mapLabel}</div></div>
       </div>
     </div>
   `;
@@ -436,26 +558,21 @@ function locationsTab() {
 
 function poaTab() {
   return `
-    <div class="poa-layout">
-      <div class="panel">
-        <div class="panel-head"><h2>POA Text Details</h2></div>
-        <div class="panel-body">
-          <div class="field"><label>Pilots</label><div class="input">Drew Roberts, Colin Burgess</div></div><br>
-          <div class="field"><label>Activity</label><div class="input">Filming actors and scenery on a closed set.</div></div><br>
-          <div class="field"><label>Local Times</label><div class="input">Jun 24 0600-1800</div></div><br>
-          <div class="field"><label>Registered Aircraft</label><div class="input">Inspire 3 x3</div></div><br>
-          <div class="field"><label>Security</label><div class="input">Secure takeoff/landing zone. 30 ft perimeter.</div></div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Map Annotation</h2><div class="actions"><button class="btn primary">Preview POA</button><button class="btn">Export PDF</button></div></div>
-        <div class="panel-body">
-          <div class="map">Annotated map canvas</div>
-          <div class="tool-row">
-            ${['Text','Circle','Polygon','Path','Arrow','Launch','Spotter','Restricted','Auto Legend'].map(t => `<button class="btn">${t}</button>`).join('')}
-          </div>
-        </div>
-      </div>
+    <div class="panel">
+      <div class="panel-head"><h2>POAs By Location</h2><button class="btn">Export All POAs</button></div>
+      <table class="table">
+        <thead><tr><th>Location</th><th>Status</th><th>Last Export</th><th>Action</th></tr></thead>
+        <tbody>
+          ${jobLocations.map(location => `
+            <tr>
+              <td><strong>${location.name}</strong><br><span class="muted">${location.address}</span></td>
+              <td>${badge(location.poa)}</td>
+              <td>${location.poa.includes('Draft') ? 'Draft only' : '-'}</td>
+              <td><button class="btn" data-location-open="${location.id}" data-location-open-section="poa">Open POA Builder</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
     </div>
   `;
 }
@@ -588,10 +705,70 @@ function renderResources() {
       <div>
         <p class="eyebrow">Warn-only conflicts</p>
         <h1>Resources</h1>
-        <p class="sub">Calendar/timeline and list views for crew, drones, vehicles, assigned jobs, and overlaps.</p>
+        <p class="sub">Calendar, timeline, and list views for crew, drones, vehicles, gear, assigned jobs, and overlaps.</p>
       </div>
-      <div class="actions"><button class="btn primary">Calendar</button><button class="btn">List</button><button class="btn primary">2 Weeks</button><button class="btn">Month</button></div>
+      <div class="actions"><button class="btn primary">2 Weeks</button><button class="btn">Month</button></div>
     </div>
+    <div class="tabs">
+      ${['calendar','timeline','list'].map(view => `
+        <button class="tab ${resourceView === view ? 'active' : ''}" data-resource-view="${view}">${view[0].toUpperCase() + view.slice(1)}</button>
+      `).join('')}
+    </div>
+    ${resourceView === 'calendar' ? resourceCalendarView() : resourceView === 'timeline' ? resourceTimelineView(dates) : resourceListView()}
+  `;
+}
+
+function resourceCalendarView() {
+  const days = ['Mon Jun 22','Tue Jun 23','Wed Jun 24','Thu Jun 25','Fri Jun 26','Sat Jun 27','Sun Jun 28'];
+  const groupLabel = resourceGroup === 'resource' ? 'Resource' : 'Job';
+  const entries = resourceGroup === 'resource'
+    ? [
+        ['Drew Roberts', 'Prep', 'Travel', 'Shoot', 'Idle', 'Shoot', 'Shoot', 'Wrap'],
+        ['Inspire 3 A', 'Prep', 'Travel', 'Conflict', 'Idle', 'Shoot', 'Shoot', 'Wrap'],
+        ['Van 1', 'Prep', 'Travel', 'Shoot', 'Idle', 'Shoot', 'Shoot', 'Wrap']
+      ]
+    : [
+        ['Radical / Lexus', 'Prep', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', 'Wrap'],
+        ['MJZ / Nike Hold', '-', '-', 'Hold', '-', 'Hold', '-', '-']
+      ];
+  return `
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Resource Calendar</h2>
+        <div class="actions">
+          <button class="btn ${resourceGroup === 'resource' ? 'primary' : ''}" data-resource-group="resource">Group By Resource</button>
+          <button class="btn ${resourceGroup === 'job' ? 'primary' : ''}" data-resource-group="job">Group By Job</button>
+        </div>
+      </div>
+      <div class="panel-note">Calendar view is for schedule shape and visible overlap. Timeline view remains the dense resource scan.</div>
+      <div class="resource-schedule">
+        <div class="resource-schedule-head">
+          <div>${groupLabel}</div>
+          ${days.map(day => `<div>${day}</div>`).join('')}
+        </div>
+        ${entries.map(row => `
+          <div class="resource-schedule-row">
+            <div class="resource-label">${row[0]}</div>
+            ${row.slice(1).map(item => `
+              <div class="resource-day">
+                ${item === '-' ? '' : `<div class="resource-block ${item === 'Conflict' ? 'conflict' : ''}"><span>${item}</span><small>${resourceGroup === 'resource' ? 'Radical / Lexus' : 'Drew / Inspire 3 / Van 1'}</small></div>`}
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Warnings</h2><button class="btn">Show All</button></div>
+      <div class="panel-body">
+        <p><strong>Inspire 3 A</strong> has a Jun 24 overlap between Radical / Lexus shoot and MJZ / Nike hold. Warning only.</p>
+      </div>
+    </div>
+  `;
+}
+
+function resourceTimelineView(dates) {
+  return `
     <div class="panel">
       <div class="panel-head"><h2>Resource Calendar</h2><div class="actions"><button class="btn">Crew</button><button class="btn">Drones</button><button class="btn">Vehicles</button></div></div>
       <div class="panel-note">Two-week scale shown. Month scale expands this same timeline so prep, shoot, wrap, holds, and travel are visible together.</div>
@@ -609,7 +786,11 @@ function renderResources() {
         </div>
       </div>
     </div>
-    <br>
+  `;
+}
+
+function resourceListView() {
+  return `
     <div class="panel">
       <div class="panel-head"><h2>Resource List View</h2><div class="actions"><button class="btn">Sort By Date</button><button class="btn">Show Conflicts</button></div></div>
       <table class="table">
@@ -620,6 +801,76 @@ function renderResources() {
           <tr><td>Van 1</td><td>Vehicle</td><td>Jun 22-Jun 28</td><td>${badge('Booked')}</td><td>Radical / Lexus</td></tr>
         </tbody>
       </table>
+    </div>
+  `;
+}
+
+function renderMetrics() {
+  document.querySelector('#metrics').innerHTML = `
+    <div class="page-head">
+      <div>
+        <p class="eyebrow">Company intelligence</p>
+        <h1>Metrics</h1>
+        <p class="sub">Read-only analytics with changeable views, filters, and AI-assisted business trends.</p>
+      </div>
+      <div class="actions"><button class="btn primary">This Quarter</button><button class="btn">YTD</button><button class="btn">By Client</button><button class="btn">By Drone</button></div>
+    </div>
+    <div class="metrics-hero">
+      <div>
+        <p class="eyebrow">AI trend summary</p>
+        <h2>Inspire 3 work is driving most booked shoot days this month.</h2>
+        <p class="sub">Billing delays are longest on jobs with location permit packets. Repeat clients are responsible for 64% of booked revenue.</p>
+      </div>
+      <button class="btn dark">Generate Insights</button>
+    </div>
+    <div class="metric-grid">
+      <div class="metric"><strong>12</strong><span>Jobs booked</span></div>
+      <div class="metric"><strong>$148k</strong><span>Booked revenue</span></div>
+      <div class="metric"><strong>31</strong><span>Shoot days</span></div>
+      <div class="metric"><strong>18</strong><span>Crew hires</span></div>
+      <div class="metric"><strong>64%</strong><span>Repeat client revenue</span></div>
+      <div class="metric"><strong>7.4d</strong><span>Avg closeout</span></div>
+    </div>
+    <div class="grid two">
+      <div class="panel">
+        <div class="panel-head"><h2>Revenue By Drone Package</h2><button class="btn">Change View</button></div>
+        <div class="chart-bars">
+          <div><span>Inspire 3</span><strong style="width: 82%"></strong><em>$89k</em></div>
+          <div><span>Alta X</span><strong style="width: 42%"></strong><em>$38k</em></div>
+          <div><span>FPV</span><strong style="width: 24%"></strong><em>$21k</em></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Workload By Day Type</h2><button class="btn">Filter</button></div>
+        <div class="chart-bars">
+          <div><span>Shoot</span><strong style="width: 90%"></strong><em>31 days</em></div>
+          <div><span>Prep</span><strong style="width: 62%"></strong><em>21 days</em></div>
+          <div><span>Travel</span><strong style="width: 38%"></strong><em>13 days</em></div>
+          <div><span>Wrap</span><strong style="width: 35%"></strong><em>12 days</em></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Client / Production Patterns</h2></div>
+        <table class="table">
+          <thead><tr><th>Client</th><th>Jobs</th><th>Revenue</th><th>Trend</th></tr></thead>
+          <tbody>
+            <tr><td>Radical</td><td>3</td><td>$42k</td><td>${badge('Growing')}</td></tr>
+            <tr><td>Hungry Man</td><td>2</td><td>$31k</td><td>${badge('Stable')}</td></tr>
+            <tr><td>MJZ</td><td>2</td><td>$26k</td><td>${badge('Pending')}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Paperwork Friction</h2></div>
+        <table class="table">
+          <thead><tr><th>Area</th><th>Volume</th><th>AI Note</th></tr></thead>
+          <tbody>
+            <tr><td>Location permits</td><td>14 packets</td><td>Highest producer admin load</td></tr>
+            <tr><td>Insurance forms</td><td>9 forms</td><td>Good candidate for template memory</td></tr>
+            <tr><td>Deal memos</td><td>18 memos</td><td>Rates and day types drive variation</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   `;
 }
@@ -642,6 +893,8 @@ function bind() {
     const openJob = e.target.closest('[data-open-job]');
     if (openJob) {
       activeJob = jobs.find(j => j.id === openJob.dataset.openJob) || jobs[0];
+      locationMode = 'overview';
+      activeLocationSection = 'overview';
       renderJob();
       show('job');
     }
@@ -660,11 +913,49 @@ function bind() {
       document.querySelector(`[data-job-tab="${name}"]`)?.click();
     }
 
-    const locationSelect = e.target.closest('[data-location-select]');
-    if (locationSelect) {
-      activeLocationId = locationSelect.dataset.locationSelect;
+    const locationOpen = e.target.closest('[data-location-open]');
+    if (locationOpen) {
+      activeLocationId = locationOpen.dataset.locationOpen;
+      activeLocationSection = locationOpen.dataset.locationOpenSection || 'overview';
+      locationMode = 'detail';
+      document.querySelector('[data-job-tab="locations"]')?.click();
       const locationTab = document.querySelector('#tab-locations');
       if (locationTab) locationTab.innerHTML = locationsTab();
+    }
+
+    const locationBack = e.target.closest('[data-location-back]');
+    if (locationBack) {
+      locationMode = 'overview';
+      activeLocationSection = 'overview';
+      const locationTab = document.querySelector('#tab-locations');
+      if (locationTab) locationTab.innerHTML = locationsTab();
+    }
+
+    const locationCycle = e.target.closest('[data-location-cycle]');
+    if (locationCycle) {
+      cycleLocation(Number(locationCycle.dataset.locationCycle));
+      const locationTab = document.querySelector('#tab-locations');
+      if (locationTab) locationTab.innerHTML = locationsTab();
+    }
+
+    const locationSection = e.target.closest('[data-location-section]');
+    if (locationSection) {
+      activeLocationSection = locationSection.dataset.locationSection;
+      locationMode = 'detail';
+      const locationTab = document.querySelector('#tab-locations');
+      if (locationTab) locationTab.innerHTML = locationsTab();
+    }
+
+    const resourceViewButton = e.target.closest('[data-resource-view]');
+    if (resourceViewButton) {
+      resourceView = resourceViewButton.dataset.resourceView;
+      renderResources();
+    }
+
+    const resourceGroupButton = e.target.closest('[data-resource-group]');
+    if (resourceGroupButton) {
+      resourceGroup = resourceGroupButton.dataset.resourceGroup;
+      renderResources();
     }
   });
 }
@@ -675,6 +966,7 @@ renderNewJob();
 renderJob();
 renderCalendar();
 renderResources();
+renderMetrics();
 renderSimple('libraries', 'Libraries');
 renderSimple('settings', 'Settings');
 bind();
