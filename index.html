@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WRA Ops Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">WR</div>
+        <div>
+          <strong>WRA Ops</strong>
+          <span>Low-fi prototype</span>
+        </div>
+      </div>
+      <nav>
+        <button class="nav active" data-screen="home">Home</button>
+        <button class="nav" data-screen="jobs">Jobs</button>
+        <button class="nav" data-screen="calendar">Calendar</button>
+        <button class="nav" data-screen="resources">Resources</button>
+        <button class="nav" data-screen="libraries">Libraries</button>
+        <button class="nav" data-screen="settings">Settings</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="search">Search jobs, clients, locations, crew, docs...</div>
+        <div class="user">Melissa / Martin</div>
+      </header>
+
+      <section id="home" class="screen active"></section>
+      <section id="jobs" class="screen"></section>
+      <section id="newJob" class="screen"></section>
+      <section id="job" class="screen"></section>
+      <section id="calendar" class="screen"></section>
+      <section id="resources" class="screen"></section>
+      <section id="libraries" class="screen"></section>
+      <section id="settings" class="screen"></section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
