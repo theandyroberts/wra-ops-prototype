@@ -208,6 +208,32 @@ h3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metric {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.metric strong {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.metric span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .panel {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -226,6 +252,14 @@ h3 {
 
 .panel-body {
   padding: 16px;
+}
+
+.panel-note {
+  color: var(--muted);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcfd;
+  font-size: 13px;
 }
 
 .table {
@@ -401,6 +435,182 @@ h3 {
   border-radius: 8px;
 }
 
+.map.small {
+  min-height: 104px;
+  min-width: 160px;
+}
+
+.locations-workspace {
+  display: grid;
+  grid-template-columns: minmax(420px, .95fr) minmax(360px, 1.05fr);
+  gap: 16px;
+}
+
+.location-list-panel {
+  align-self: start;
+}
+
+.location-block {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  gap: 14px;
+  align-items: stretch;
+  padding: 14px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  text-align: left;
+}
+
+.location-block:hover,
+.location-block.active {
+  background: #f3fafb;
+}
+
+.location-block.active {
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+
+.location-copy {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+
+.selected-location-panel {
+  align-self: start;
+}
+
+.detail-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.location-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.location-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px;
+  gap: 14px;
+  align-items: stretch;
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.location-card:hover,
+.location-card.active {
+  background: #f3fafb;
+}
+
+.location-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.month-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(120px, 1fr));
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  font-weight: 800;
+  overflow: auto;
+}
+
+.month-weekdays div {
+  padding: 10px;
+  border-right: 1px solid var(--line);
+}
+
+.month-weekdays div:last-child {
+  border-right: 0;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(120px, 1fr));
+  background: var(--panel);
+  border: 1px solid var(--line);
+  overflow: auto;
+}
+
+.month-day {
+  min-height: 132px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 0;
+}
+
+.month-day:nth-child(7n) {
+  border-right: 0;
+}
+
+.date-num {
+  font-weight: 800;
+  color: var(--muted);
+  margin-bottom: 18px;
+  padding: 0 8px;
+}
+
+.bar {
+  min-height: 42px;
+  padding: 7px 8px;
+  background: #e8f3f6;
+  border-top: 1px solid #bfdce2;
+  border-bottom: 1px solid #bfdce2;
+  font-size: 12px;
+  font-weight: 750;
+  margin: 0;
+}
+
+.bar.start {
+  border-left: 4px solid var(--accent);
+  border-radius: 6px 0 0 6px;
+  margin-left: 8px;
+}
+
+.bar.mid {
+  border-left: 0;
+}
+
+.bar.end {
+  border-radius: 0 6px 6px 0;
+  margin-right: 8px;
+}
+
+.day-tag {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: var(--accent-2);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.resource-scroll {
+  overflow-x: auto;
+}
+
+.resource-calendar {
+  min-width: 1220px;
+}
+
+.resource-calendar .table th,
+.resource-calendar .table td {
+  white-space: nowrap;
+  min-width: 86px;
+}
+
 .poa-layout {
   display: grid;
   grid-template-columns: 360px minmax(0, 1fr);
@@ -433,8 +643,15 @@ h3 {
 
   .grid.two,
   .grid.three,
+  .metric-grid,
+  .locations-workspace,
   .poa-layout,
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .location-card,
+  .location-block {
     grid-template-columns: 1fr;
   }
 }

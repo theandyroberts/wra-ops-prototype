@@ -52,6 +52,59 @@ const jobs = [
 const screens = [...document.querySelectorAll('.screen')];
 const navs = [...document.querySelectorAll('.nav')];
 let activeJob = jobs[0];
+let activeLocationId = 'downtown-rooftop';
+
+const jobLocations = [
+  {
+    id: 'downtown-rooftop',
+    name: 'Downtown Rooftop',
+    address: '123 Main St, Los Angeles, CA',
+    gps: '34.0522, -118.2437',
+    airspace: 'Needs LAANC',
+    poa: 'POA Draft',
+    docs: 'Docs Pending',
+    uasfm: '100 ft',
+    context: 'Class B',
+    tfr: 'None detected',
+    authorization: 'LAANC likely needed',
+    requestedAltitude: '100 ft',
+    mapLabel: 'Saved Google Maps rooftop view'
+  },
+  {
+    id: 'pasadena-bridge',
+    name: 'Pasadena Bridge',
+    address: 'Pasadena, CA',
+    gps: '34.1478, -118.1445',
+    airspace: 'Clear',
+    poa: 'No POA',
+    docs: 'Docs Pending',
+    uasfm: '400 ft',
+    context: 'Uncontrolled / review final coordinates',
+    tfr: 'None detected',
+    authorization: 'No LAANC expected',
+    requestedAltitude: '200 ft',
+    mapLabel: 'Saved Google Maps bridge view'
+  },
+  {
+    id: 'granada-hills-road',
+    name: 'Granada Hills Road',
+    address: 'Sesnon Blvd, Granada Hills, CA',
+    gps: '34.3064, -118.5231',
+    airspace: 'Needs Review',
+    poa: 'POA Needed',
+    docs: 'Docs Pending',
+    uasfm: 'Check needed',
+    context: 'Near hills / verify restrictions',
+    tfr: 'Check before shoot',
+    authorization: 'Review before pilot email',
+    requestedAltitude: 'TBD',
+    mapLabel: 'Saved Google Maps road view'
+  }
+];
+
+function currentLocation() {
+  return jobLocations.find(l => l.id === activeLocationId) || jobLocations[0];
+}
 
 function badge(status) {
   const cls = status.includes('Prep') || status.includes('Booked') ? 'ok' :
@@ -92,6 +145,15 @@ function renderHome() {
         <button class="btn">Upload Document</button>
         <button class="btn" data-screen-link="calendar">Open Calendar</button>
       </div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric"><strong>3</strong><span>Booked jobs</span></div>
+      <div class="metric"><strong>2</strong><span>Pending jobs</span></div>
+      <div class="metric"><strong>7</strong><span>Crew assigned</span></div>
+      <div class="metric"><strong>$12.5k</strong><span>Billing this month</span></div>
+      <div class="metric"><strong>9</strong><span>Shoot days</span></div>
+      <div class="metric"><strong>4</strong><span>Drone packages</span></div>
     </div>
 
     <div class="grid two">
@@ -313,43 +375,56 @@ function crewTab() {
 }
 
 function locationsTab() {
+  const selected = currentLocation();
   return `
-    <div class="grid two">
-      <div class="panel">
+    <div class="locations-workspace">
+      <div class="panel location-list-panel">
         <div class="panel-head"><h2>Locations</h2><button class="btn">Add Location</button></div>
-        <table class="table">
-          <thead><tr><th>Location</th><th>Airspace</th><th>POA</th><th>Docs</th></tr></thead>
-          <tbody>
-            <tr><td>Downtown Rooftop</td><td>${badge('Needs LAANC')}</td><td>Draft</td><td>Pending</td></tr>
-            <tr><td>Pasadena Bridge</td><td>${badge('Clear')}</td><td>None</td><td>Pending</td></tr>
-          </tbody>
-        </table>
+        ${jobLocations.map(location => `
+          <button class="location-block ${location.id === selected.id ? 'active' : ''}" data-location-select="${location.id}">
+            <div class="location-copy">
+              <h3>${location.name}</h3>
+              <p class="muted">${location.address}</p>
+              <div class="location-meta">${badge(location.airspace)} ${badge(location.poa)} ${badge(location.docs)}</div>
+            </div>
+            <div class="map small">${location.mapLabel}</div>
+          </button>
+        `).join('')}
       </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Downtown Rooftop</h2></div>
+      <div class="panel selected-location-panel">
+        <div class="panel-head"><h2>${selected.name}</h2><button class="btn primary" data-job-tab-link="poa">Create POA</button></div>
         <div class="panel-body">
-          <p><strong>Address:</strong> 123 Main St, Los Angeles, CA</p>
-          <p><strong>GPS:</strong> 34.0522, -118.2437</p>
-          <p><strong>Airspace:</strong> Class B · UASFM 100 ft · No TFR detected</p>
-          <div class="map">Saved Google Maps view</div>
-          <br>
-          <button class="btn primary" data-job-tab-link="poa">Create POA</button>
+          <div class="detail-stack">
+            <div>
+              <p><strong>Address:</strong> ${selected.address}</p>
+              <p><strong>GPS:</strong> ${selected.gps}</p>
+              <p><strong>Airspace:</strong> ${selected.context}</p>
+              <p><strong>Authorization:</strong> ${selected.authorization}</p>
+            </div>
+            <div class="map">${selected.mapLabel}</div>
+          </div>
+          <div class="location-action-row">
+            <button class="btn">Open Maps</button>
+            <button class="btn">Recheck Airspace</button>
+            <button class="btn">Attach Location Form</button>
+          </div>
         </div>
       </div>
       <div class="panel wide">
-        <div class="panel-head"><h2>Location Airspace / Pilot Email</h2><button class="btn primary">Copy Pilot Email</button></div>
+        <div class="panel-head"><h2>Airspace / Pilot Email</h2><button class="btn primary">Copy Pilot Email</button></div>
         <div class="panel-body">
           <div class="grid two">
             <div>
-              <p><strong>UASFM max altitude:</strong> 100 ft</p>
-              <p><strong>Airspace context:</strong> Class B</p>
-              <p><strong>TFR status:</strong> none detected</p>
-              <p><strong>Authorization:</strong> LAANC likely needed</p>
-              <p><strong>Requested altitude:</strong> 100 ft</p>
+              <p><strong>Location:</strong> ${selected.name}</p>
+              <p><strong>UASFM max altitude:</strong> ${selected.uasfm}</p>
+              <p><strong>Airspace context:</strong> ${selected.context}</p>
+              <p><strong>TFR status:</strong> ${selected.tfr}</p>
+              <p><strong>Authorization:</strong> ${selected.authorization}</p>
+              <p><strong>Requested altitude:</strong> ${selected.requestedAltitude}</p>
             </div>
             <div>
               <p><strong>To:</strong> Drew Roberts</p>
-              <p><strong>Subject:</strong> LAANC details - Radical / Lexus - Downtown Rooftop</p>
+              <p><strong>Subject:</strong> LAANC details - Radical / Lexus - ${selected.name}</p>
               <div class="input" style="min-height: 110px;">Generated email with job, location, GPS, date blocks, requested altitude, UASFM result, TFR status, pilot/aircraft list, and producer contact.</div>
             </div>
           </div>
@@ -466,28 +541,40 @@ function archiveTab() {
 }
 
 function renderCalendar() {
-  const days = ['Mon Jun 22', 'Tue Jun 23', 'Wed Jun 24', 'Thu Jun 25', 'Fri Jun 26', 'Sat Jun 27'];
-  const events = {
-    0: [['PREP', 'Radical / Lexus - Prep']],
-    1: [['TRAVEL', 'Radical / Lexus - Travel']],
-    2: [['SHOOT', 'Radical / Lexus - Shoot Day 1'], ['HOLD', 'MJZ / Nike - Hold']],
-    4: [['SHOOT', 'Radical / Lexus - Shoot Day 2']],
-    5: [['SHOOT', 'Radical / Lexus - Shoot Day 3']]
-  };
+  const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const days = [
+    ['22', 'PREP', 'start', 'Radical / Lexus'],
+    ['23', 'TRAVEL', 'mid', 'Radical / Lexus'],
+    ['24', 'SHOOT 1', 'mid', 'Radical / Lexus'],
+    ['25', 'IDLE', 'mid', 'Radical / Lexus'],
+    ['26', 'SHOOT 2', 'mid', 'Radical / Lexus'],
+    ['27', 'SHOOT 3', 'mid', 'Radical / Lexus'],
+    ['28', 'WRAP', 'end', 'Radical / Lexus'],
+    ['29', '', ''],
+    ['30', '', ''],
+    ['1', 'HOLD', 'start', 'MJZ / Nike'],
+    ['2', 'SCOUT', 'end', 'MJZ / Nike'],
+    ['3', '', ''],
+    ['4', '', ''],
+    ['5', '', '']
+  ];
   document.querySelector('#calendar').innerHTML = `
     <div class="page-head">
       <div>
-        <p class="eyebrow">Week default</p>
+        <p class="eyebrow">Month default</p>
         <h1>Calendar</h1>
-        <p class="sub">One event per date block. External edits require review.</p>
+        <p class="sub">Connected job blocks with day-type tags. External edits require review.</p>
       </div>
-      <div class="actions"><button class="btn primary">Week</button><button class="btn">Month</button><button class="btn">Agenda</button></div>
+      <div class="actions"><button class="btn primary">Month</button><button class="btn">Week</button><button class="btn">Agenda</button></div>
     </div>
-    <div class="calendar-grid">
+    <div class="month-weekdays">
+      ${weekdays.map(d => `<div>${d}</div>`).join('')}
+    </div>
+    <div class="month-grid">
       ${days.map((d, i) => `
-        <div class="day">
-          <div class="day-head">${d}</div>
-          ${(events[i] || []).map(e => `<div class="event"><span class="badge">${e[0]}</span><br><strong>${e[1]}</strong><br><span class="muted">Drew / Inspire 3</span></div>`).join('')}
+        <div class="month-day">
+          <div class="date-num">${d[0]}</div>
+          ${d[1] ? `<div class="bar ${d[2]}"><span class="day-tag">${d[1]}</span><br>${d[3]}</div>` : ''}
         </div>
       `).join('')}
     </div>
@@ -495,23 +582,42 @@ function renderCalendar() {
 }
 
 function renderResources() {
+  const dates = ['Jun 22','Jun 23','Jun 24','Jun 25','Jun 26','Jun 27','Jun 28','Jun 29','Jun 30','Jul 1','Jul 2','Jul 3','Jul 4','Jul 5'];
   document.querySelector('#resources').innerHTML = `
     <div class="page-head">
       <div>
         <p class="eyebrow">Warn-only conflicts</p>
         <h1>Resources</h1>
-        <p class="sub">Crew, drones, vehicles, assigned jobs, and overlaps.</p>
+        <p class="sub">Calendar/timeline and list views for crew, drones, vehicles, assigned jobs, and overlaps.</p>
       </div>
-      <div class="actions"><button class="btn primary">All</button><button class="btn">Crew</button><button class="btn">Drones</button><button class="btn">Vehicles</button></div>
+      <div class="actions"><button class="btn primary">Calendar</button><button class="btn">List</button><button class="btn primary">2 Weeks</button><button class="btn">Month</button></div>
     </div>
     <div class="panel">
+      <div class="panel-head"><h2>Resource Calendar</h2><div class="actions"><button class="btn">Crew</button><button class="btn">Drones</button><button class="btn">Vehicles</button></div></div>
+      <div class="panel-note">Two-week scale shown. Month scale expands this same timeline so prep, shoot, wrap, holds, and travel are visible together.</div>
+      <div class="resource-scroll">
+        <div class="resource-calendar">
+          <table class="table">
+            <thead><tr><th>Resource</th>${dates.map(d => `<th>${d}</th>`).join('')}</tr></thead>
+            <tbody>
+              <tr><td>Drew Roberts</td><td>Prep</td><td>Travel</td><td>Shoot</td><td>Idle</td><td>Shoot</td><td>Shoot</td><td>Wrap</td><td>-</td><td>-</td><td>Hold</td><td>Scout</td><td>-</td><td>-</td><td>-</td></tr>
+              <tr><td>Colin Burgess</td><td>-</td><td>-</td><td>Paperwork</td><td>-</td><td>Paperwork</td><td>Paperwork</td><td>-</td><td>-</td><td>-</td><td>Hold</td><td>Hold</td><td>-</td><td>-</td><td>-</td></tr>
+              <tr><td>Inspire 3 A</td><td>Prep</td><td>Travel</td><td><span class="badge warn">Conflict</span></td><td>Idle</td><td>Shoot</td><td>Shoot</td><td>Wrap</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+              <tr><td>Van 1</td><td>Prep</td><td>Travel</td><td>Shoot</td><td>Idle</td><td>Shoot</td><td>Shoot</td><td>Wrap</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="panel">
+      <div class="panel-head"><h2>Resource List View</h2><div class="actions"><button class="btn">Sort By Date</button><button class="btn">Show Conflicts</button></div></div>
       <table class="table">
-        <thead><tr><th>Resource</th><th>Jun 22</th><th>Jun 23</th><th>Jun 24</th><th>Jun 25</th><th>Jun 26</th></tr></thead>
+        <thead><tr><th>Resource</th><th>Type</th><th>Date Range</th><th>Status</th><th>Jobs / Notes</th></tr></thead>
         <tbody>
-          <tr><td>Drew Roberts</td><td>Prep</td><td>Travel</td><td>Shoot</td><td>-</td><td>Shoot</td></tr>
-          <tr><td>Colin Burgess</td><td>-</td><td>-</td><td>Hold</td><td>-</td><td>Hold</td></tr>
-          <tr><td>Inspire 3 A</td><td>Prep</td><td>Travel</td><td><span class="badge warn">Conflict</span></td><td>-</td><td>Shoot</td></tr>
-          <tr><td>Van 1</td><td>Prep</td><td>Travel</td><td>Shoot</td><td>-</td><td>Shoot</td></tr>
+          <tr><td>Drew Roberts</td><td>Crew</td><td>Jun 22-Jun 28</td><td>${badge('Booked')}</td><td>Radical / Lexus</td></tr>
+          <tr><td>Inspire 3 A</td><td>Drone</td><td>Jun 24</td><td>${badge('Conflict')}</td><td>Radical / Lexus, MJZ / Nike hold</td></tr>
+          <tr><td>Van 1</td><td>Vehicle</td><td>Jun 22-Jun 28</td><td>${badge('Booked')}</td><td>Radical / Lexus</td></tr>
         </tbody>
       </table>
     </div>
@@ -552,6 +658,13 @@ function bind() {
     if (tabLink) {
       const name = tabLink.dataset.jobTabLink;
       document.querySelector(`[data-job-tab="${name}"]`)?.click();
+    }
+
+    const locationSelect = e.target.closest('[data-location-select]');
+    if (locationSelect) {
+      activeLocationId = locationSelect.dataset.locationSelect;
+      const locationTab = document.querySelector('#tab-locations');
+      if (locationTab) locationTab.innerHTML = locationsTab();
     }
   });
 }
