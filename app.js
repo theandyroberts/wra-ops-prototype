@@ -720,17 +720,31 @@ function renderResources() {
 
 function resourceCalendarView() {
   const days = ['Mon Jun 22','Tue Jun 23','Wed Jun 24','Thu Jun 25','Fri Jun 26','Sat Jun 27','Sun Jun 28'];
-  const groupLabel = resourceGroup === 'resource' ? 'Resource' : 'Job';
-  const entries = resourceGroup === 'resource'
-    ? [
-        ['Drew Roberts', 'Prep', 'Travel', 'Shoot', 'Idle', 'Shoot', 'Shoot', 'Wrap'],
-        ['Inspire 3 A', 'Prep', 'Travel', 'Conflict', 'Idle', 'Shoot', 'Shoot', 'Wrap'],
-        ['Van 1', 'Prep', 'Travel', 'Shoot', 'Idle', 'Shoot', 'Shoot', 'Wrap']
-      ]
-    : [
-        ['Radical / Lexus', 'Prep', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', 'Wrap'],
-        ['MJZ / Nike Hold', '-', '-', 'Hold', '-', 'Hold', '-', '-']
-      ];
+  const jobEvents = {
+    'Mon Jun 22': [{ type: 'PREP', title: 'Radical / Lexus', items: ['Drew', 'Nate', 'Jake', 'Inspire 3 A', 'Van 1', 'Camera kit'] }],
+    'Tue Jun 23': [{ type: 'TRAVEL', title: 'Radical / Lexus', items: ['Drew', 'Inspire 3 A', 'Van 1', 'Batteries'] }],
+    'Wed Jun 24': [
+      { type: 'SHOOT 1', title: 'Radical / Lexus', items: ['Drew', 'Nate', 'Jake', 'Inspire 3 A', 'Van 1', 'Camera kit'] },
+      { type: 'HOLD', title: 'MJZ / Nike', items: ['Colin', 'Inspire 3 A'], conflict: true }
+    ],
+    'Thu Jun 25': [{ type: 'IDLE', title: 'Radical / Lexus', items: ['Drew', 'Inspire 3 A', 'Van 1'] }],
+    'Fri Jun 26': [{ type: 'SHOOT 2', title: 'Radical / Lexus', items: ['Drew', 'Nate', 'Jake', 'Inspire 3 A', 'Van 1'] }],
+    'Sat Jun 27': [{ type: 'SHOOT 3', title: 'Radical / Lexus', items: ['Drew', 'Nate', 'Jake', 'Inspire 3 A', 'Van 1'] }],
+    'Sun Jun 28': [{ type: 'WRAP', title: 'Radical / Lexus', items: ['Drew', 'Van 1', 'Returns'] }]
+  };
+  const resourceEvents = {
+    'Mon Jun 22': [{ type: 'CREW', title: 'Drew + Nate + Jake', items: ['Radical / Lexus prep', 'Inspire 3 A', 'Van 1'] }],
+    'Tue Jun 23': [{ type: 'TRAVEL', title: 'Drew + Van 1', items: ['Radical / Lexus travel', 'Inspire 3 A'] }],
+    'Wed Jun 24': [
+      { type: 'CREW', title: 'Drew + Nate + Jake', items: ['Radical / Lexus shoot', 'Inspire 3 A', 'Van 1'] },
+      { type: 'DRONE CONFLICT', title: 'Inspire 3 A', items: ['Radical / Lexus shoot', 'MJZ / Nike hold'], conflict: true }
+    ],
+    'Thu Jun 25': [{ type: 'IDLE', title: 'Drew + Inspire 3 A', items: ['Radical / Lexus idle', 'Van 1'] }],
+    'Fri Jun 26': [{ type: 'CREW', title: 'Drew + Nate + Jake', items: ['Radical / Lexus shoot', 'Inspire 3 A', 'Van 1'] }],
+    'Sat Jun 27': [{ type: 'CREW', title: 'Drew + Nate + Jake', items: ['Radical / Lexus shoot', 'Inspire 3 A', 'Van 1'] }],
+    'Sun Jun 28': [{ type: 'WRAP', title: 'Drew + Van 1', items: ['Radical / Lexus wrap', 'Returns'] }]
+  };
+  const eventsByDay = resourceGroup === 'resource' ? resourceEvents : jobEvents;
   return `
     <div class="panel">
       <div class="panel-head">
@@ -740,22 +754,30 @@ function resourceCalendarView() {
           <button class="btn ${resourceGroup === 'job' ? 'primary' : ''}" data-resource-group="job">Group By Job</button>
         </div>
       </div>
-      <div class="panel-note">Calendar view is for schedule shape and visible overlap. Timeline view remains the dense resource scan.</div>
-      <div class="resource-schedule">
-        <div class="resource-schedule-head">
-          <div>${groupLabel}</div>
+      <div class="panel-note">Main Resources view. Google Calendar-style schedule with every used crew member, drone, vehicle, and gear item visible inside the day block.</div>
+      <div class="resource-gcal">
+        <div class="resource-gcal-head">
           ${days.map(day => `<div>${day}</div>`).join('')}
         </div>
-        ${entries.map(row => `
-          <div class="resource-schedule-row">
-            <div class="resource-label">${row[0]}</div>
-            ${row.slice(1).map(item => `
-              <div class="resource-day">
-                ${item === '-' ? '' : `<div class="resource-block ${item === 'Conflict' ? 'conflict' : ''}"><span>${item}</span><small>${resourceGroup === 'resource' ? 'Radical / Lexus' : 'Drew / Inspire 3 / Van 1'}</small></div>`}
-              </div>
+        <div class="resource-gcal-grid">
+          ${days.map(day => `
+            <div class="resource-gcal-day">
+              ${(eventsByDay[day] || []).map(event => `
+                <div class="resource-event ${event.conflict ? 'conflict' : ''}">
+                  <div class="resource-event-top">
+                    <span>${event.type}</span>
+                    ${event.conflict ? '<strong>Overlap</strong>' : ''}
+                  </div>
+                  <h3>${event.title}</h3>
+                  <div class="resource-item-list">
+                    ${event.items.map(item => `<em>${item}</em>`).join('')}
+                  </div>
+                </div>
+              `).join('')}
+              ${(eventsByDay[day] || []).length === 0 ? '<p class="muted">No resources assigned</p>' : ''}
+            </div>
             `).join('')}
-          </div>
-        `).join('')}
+        </div>
       </div>
     </div>
     <div class="panel">
