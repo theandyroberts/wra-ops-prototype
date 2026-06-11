@@ -56,7 +56,7 @@ let activeLocationId = 'downtown-rooftop';
 let locationMode = 'overview';
 let activeLocationSection = 'overview';
 let resourceView = 'calendar';
-let resourceGroup = 'resource';
+let resourceGroup = 'job';
 
 const jobLocations = [
   {
