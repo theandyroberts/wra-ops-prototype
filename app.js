@@ -56,7 +56,7 @@ let activeLocationId = 'downtown-rooftop';
 let locationMode = 'overview';
 let activeLocationSection = 'overview';
 let resourceView = 'calendar';
-let resourceGroup = 'job';
+let resourceGroup = 'resource';
 
 const jobLocations = [
   {
@@ -153,7 +153,7 @@ function renderHome() {
       <div>
         <p class="eyebrow">Command Center</p>
         <h1>Home</h1>
-        <p class="sub">Active work, upcoming jobs, and calendar changes needing review.</p>
+        <p class="sub">Active work, upcoming jobs, and the details producers need first.</p>
       </div>
       <div class="actions">
         <button class="btn primary" data-screen-link="newJob">New Job</button>
@@ -171,23 +171,23 @@ function renderHome() {
       <div class="metric"><strong>4</strong><span>Drone packages</span></div>
     </div>
 
-    <div class="grid two">
+    <div class="review-strip">
+      <div>
+        <strong>1 calendar change needs review</strong>
+        <span>Radical / Lexus - Shoot Day 1 changed externally in Google Calendar.</span>
+      </div>
+      <button class="btn">Review</button>
+    </div>
+
+    <div class="grid">
       <div class="panel">
-        <div class="panel-head"><h2>Upcoming Booked Jobs</h2></div>
+        <div class="panel-head"><h2>Upcoming Booked Jobs</h2><button class="btn">View All Booked</button></div>
         <table class="table">
           <thead><tr><th>Date</th><th>Production</th><th>Job</th><th>Status</th><th>Crew</th><th>Drone</th><th>Location</th></tr></thead>
           <tbody>${jobRows('Booked / Active')}</tbody>
         </table>
       </div>
       <div class="panel">
-        <div class="panel-head"><h2>Calendar Changes</h2></div>
-        <div class="panel-body">
-          <p><strong>Radical / Lexus - Shoot Day 1</strong></p>
-          <p class="muted">Changed externally in Google Calendar. Review before updating job dates.</p>
-          <button class="btn">Review Change</button>
-        </div>
-      </div>
-      <div class="panel wide">
         <div class="panel-head"><h2>Pending / Potential</h2></div>
         <table class="table">
           <thead><tr><th>Date</th><th>Production</th><th>Job</th><th>Status</th><th>Crew</th><th>Drone</th><th>Location</th></tr></thead>
@@ -745,6 +745,15 @@ function resourceCalendarView() {
     'Sun Jun 28': [{ type: 'WRAP', title: 'Drew + Van 1', items: ['Radical / Lexus wrap', 'Returns'] }]
   };
   const eventsByDay = resourceGroup === 'resource' ? resourceEvents : jobEvents;
+  const resourceLanes = [
+    ['Drew Roberts', ['Prep', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', 'Wrap']],
+    ['Nate Labruzza', ['Prep', '', 'Shoot 1', '', 'Shoot 2', 'Shoot 3', '']],
+    ['Jake Capistron', ['Prep', '', 'Shoot 1', '', 'Shoot 2', 'Shoot 3', '']],
+    ['Inspire 3 A', ['Prep', 'Travel', 'Conflict', 'Idle', 'Shoot 2', 'Shoot 3', '']],
+    ['Van 1', ['Prep', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', 'Wrap']],
+    ['Camera kit', ['Prep', '', 'Shoot 1', '', '', '', '']],
+    ['Batteries', ['', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', '']]
+  ];
   return `
     <div class="panel">
       <div class="panel-head">
@@ -754,7 +763,25 @@ function resourceCalendarView() {
           <button class="btn ${resourceGroup === 'job' ? 'primary' : ''}" data-resource-group="job">Group By Job</button>
         </div>
       </div>
-      <div class="panel-note">Main Resources view. Google Calendar-style schedule with every used crew member, drone, vehicle, and gear item visible inside the day block.</div>
+      <div class="panel-note">${resourceGroup === 'resource' ? 'Main Resources view. Each crew member, drone, vehicle, and gear item keeps its own row so it can be tracked across the week.' : 'Job grouping shows familiar job blocks with the used crew, drones, vehicles, and gear inside each day.'}</div>
+      ${resourceGroup === 'resource' ? `
+      <div class="resource-lanes">
+        <div class="resource-lane-head">
+          <div>Resource</div>
+          ${days.map(day => `<div>${day}</div>`).join('')}
+        </div>
+        ${resourceLanes.map(row => `
+          <div class="resource-lane-row">
+            <div class="resource-lane-label">${row[0]}</div>
+            ${row[1].map(item => `
+              <div class="resource-lane-day">
+                ${item ? `<div class="resource-lane-block ${item === 'Conflict' ? 'conflict' : ''}"><strong>${item}</strong><span>${item === 'Conflict' ? 'Radical / Lexus + MJZ / Nike' : 'Radical / Lexus'}</span></div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>
+      ` : `
       <div class="resource-gcal">
         <div class="resource-gcal-head">
           ${days.map(day => `<div>${day}</div>`).join('')}
@@ -779,6 +806,7 @@ function resourceCalendarView() {
             `).join('')}
         </div>
       </div>
+      `}
     </div>
     <div class="panel">
       <div class="panel-head"><h2>Warnings</h2><button class="btn">Show All</button></div>

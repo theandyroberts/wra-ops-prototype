@@ -97,7 +97,7 @@ nav {
 
 .topbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 16px;
   height: 62px;
@@ -106,14 +106,9 @@ nav {
   border-bottom: 1px solid var(--line);
 }
 
-.search {
-  flex: 1;
-  max-width: 760px;
+.search-trigger {
   color: var(--muted);
   background: var(--panel-2);
-  border: 1px solid var(--line);
-  padding: 10px 12px;
-  border-radius: 6px;
 }
 
 .user {
@@ -232,6 +227,28 @@ h3 {
   color: var(--muted);
   font-size: 12px;
   font-weight: 700;
+}
+
+.review-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  color: #314154;
+  background: #fff9ed;
+  border: 1px solid #f3dfb7;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.review-strip strong {
+  margin-right: 8px;
+}
+
+.review-strip span {
+  color: var(--muted);
 }
 
 .panel {
@@ -669,6 +686,80 @@ h3 {
 .resource-calendar .table td {
   white-space: nowrap;
   min-width: 86px;
+}
+
+.resource-lanes {
+  overflow-x: auto;
+}
+
+.resource-lane-head,
+.resource-lane-row {
+  display: grid;
+  grid-template-columns: 170px repeat(7, minmax(135px, 1fr));
+  min-width: 1115px;
+}
+
+.resource-lane-head > div {
+  padding: 10px;
+  color: var(--muted);
+  background: #f8fafc;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.resource-lane-label,
+.resource-lane-day {
+  min-height: 74px;
+  padding: 8px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.resource-lane-label {
+  display: grid;
+  align-items: center;
+  color: var(--ink);
+  background: #fbfcfd;
+  font-weight: 850;
+}
+
+.resource-lane-day {
+  background:
+    linear-gradient(#eef2f5 1px, transparent 1px),
+    #fff;
+  background-size: 100% 37px;
+}
+
+.resource-lane-block {
+  display: grid;
+  gap: 3px;
+  padding: 7px 8px;
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  background: #e8f3f6;
+  font-size: 12px;
+}
+
+.resource-lane-block strong {
+  color: var(--ink);
+}
+
+.resource-lane-block span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.resource-lane-block.conflict {
+  border-left-color: var(--warn);
+  background: #fff4df;
+}
+
+.resource-lane-block.conflict strong,
+.resource-lane-block.conflict span {
+  color: var(--warn);
 }
 
 .resource-gcal {
