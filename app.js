@@ -705,6 +705,8 @@ function renderCalendar() {
   addEvent(23, { type: 'travel', label: 'Travel', job: 'Radical / Lexus', jobKey: 'radical', segment: 'mid', resources: [{ kind: 'crew', value: 'Drew' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }] });
   addEvent(24, { type: 'shoot', label: 'Shoot 1', job: 'Radical / Lexus', jobKey: 'radical', segment: 'mid', resources: [{ kind: 'crew', value: 'Drew + Nate + Jake' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }, { kind: 'gear', value: 'Camera kit' }] });
   addEvent(24, { type: 'hold', label: 'Hold', job: 'MJZ / Nike', jobKey: 'mjz', segment: 'single', resources: [{ kind: 'crew', value: 'Colin' }, { kind: 'drone', value: 'Inspire 3 A' }], conflict: true });
+  addEvent(24, { type: 'prep', label: 'Prep', job: 'Hungry Man / Amazon', jobKey: 'hungry', segment: 'single', resources: [{ kind: 'crew', value: 'Martin' }, { kind: 'drone', value: 'Alta X' }] });
+  addEvent(24, { type: 'scout', label: 'Scout', job: 'Smuggler / Apple', jobKey: 'smuggler', segment: 'single', resources: [{ kind: 'crew', value: 'Melissa' }, { kind: 'drone', value: 'TBD' }] });
   addEvent(25, { type: 'idle', label: 'Idle', job: 'Radical / Lexus', jobKey: 'radical', segment: 'mid', resources: [{ kind: 'crew', value: 'Drew' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }] });
   addEvent(26, { type: 'shoot', label: 'Shoot 2', job: 'Radical / Lexus', jobKey: 'radical', segment: 'mid', resources: [{ kind: 'crew', value: 'Drew + Nate + Jake' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }] });
   addEvent(27, { type: 'shoot', label: 'Shoot 3', job: 'Radical / Lexus', jobKey: 'radical', segment: 'mid', resources: [{ kind: 'crew', value: 'Drew + Nate + Jake' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }] });
@@ -728,7 +730,7 @@ function renderCalendar() {
     </div>
     <div class="month-grid">
       ${days.map(d => `
-        <div class="month-day ${d.muted ? 'muted-day' : ''}">
+        <div class="month-day ${d.muted ? 'muted-day' : ''} ${d.events.length >= 3 ? 'busy-day' : ''}">
           <div class="date-num">${d.label}</div>
           <div class="calendar-events">
             ${d.events.map(event => `

@@ -829,6 +829,14 @@ h3 {
   background: #7d6fa8;
 }
 
+.calendar-event.job-hungry {
+  background: #4f7890;
+}
+
+.calendar-event.job-smuggler {
+  background: #537184;
+}
+
 .calendar-legend i.scout {
   background: #6f63d9;
 }
@@ -969,6 +977,51 @@ h3 {
 
 .calendar-resource-chips .gear::before {
   background: #a9bfda;
+}
+
+.busy-day {
+  min-height: 300px;
+}
+
+.busy-day .calendar-events {
+  gap: 5px;
+}
+
+.busy-day .calendar-event {
+  gap: 3px;
+  padding: 6px;
+  box-shadow: none;
+}
+
+.busy-day .calendar-event-top {
+  font-size: 9px;
+}
+
+.busy-day .calendar-day-type i {
+  width: 6px;
+  height: 6px;
+}
+
+.busy-day .calendar-event h3 {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.busy-day .calendar-resource-chips {
+  gap: 3px;
+}
+
+.busy-day .calendar-resource-chips span {
+  min-height: 18px;
+  padding: 2px 5px;
+  font-size: 9px;
+}
+
+.busy-day .calendar-resource-chips span::before {
+  width: 4px;
+  height: 4px;
 }
 
 .bar {
