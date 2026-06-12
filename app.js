@@ -736,7 +736,7 @@ function renderCalendar() {
                 <div class="calendar-event-top"><span class="calendar-day-type"><i></i>${event.label}</span>${event.conflict ? '<strong>Overlap</strong>' : ''}</div>
                 <h3>${event.job}</h3>
                 <div class="calendar-resource-chips">
-                  ${event.resources.map(resource => `<span class="${resource.kind}"><b>${resource.kind}</b>${resource.value}</span>`).join('')}
+                  ${event.resources.map(resource => `<span class="${resource.kind}" title="${resource.kind}">${resource.value}</span>`).join('')}
                 </div>
               </div>
             `).join('')}
