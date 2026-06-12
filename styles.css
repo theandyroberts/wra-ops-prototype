@@ -777,6 +777,7 @@ h3 {
 .calendar-events {
   display: grid;
   gap: 7px;
+  position: relative;
 }
 
 .calendar-event {
@@ -787,6 +788,8 @@ h3 {
   border-radius: 6px;
   background: var(--job-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+  position: relative;
+  z-index: 1;
 }
 
 .calendar-event-top {
@@ -802,18 +805,6 @@ h3 {
 .calendar-event h3 {
   font-size: 13px;
   line-height: 1.2;
-}
-
-.calendar-event p {
-  margin: 0;
-  color: rgba(255, 255, 255, .86);
-  font-size: 11px;
-  font-weight: 750;
-  line-height: 1.25;
-}
-
-.calendar-event b {
-  color: rgba(255, 255, 255, .98);
 }
 
 .calendar-event.scout,
@@ -853,6 +844,68 @@ h3 {
 
 .calendar-event.conflict {
   outline: 2px solid color-mix(in srgb, var(--danger) 65%, #fff);
+}
+
+.calendar-event.connected {
+  border-radius: 0;
+  margin-left: -8px;
+  margin-right: -8px;
+}
+
+.calendar-event.connected.start {
+  border-radius: 6px 0 0 6px;
+  margin-left: 0;
+}
+
+.calendar-event.connected.end {
+  border-radius: 0 6px 6px 0;
+  margin-right: 0;
+}
+
+.calendar-event.single {
+  border-radius: 6px;
+}
+
+.calendar-resource-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.calendar-resource-chips span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 21px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1.1;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2);
+}
+
+.calendar-resource-chips b {
+  color: rgba(255, 255, 255, .86);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.calendar-resource-chips .crew {
+  background: var(--crew-color);
+}
+
+.calendar-resource-chips .drone {
+  background: var(--drone-color);
+}
+
+.calendar-resource-chips .vehicle {
+  background: var(--vehicle-color);
+}
+
+.calendar-resource-chips .gear {
+  background: var(--gear-color);
 }
 
 .bar {

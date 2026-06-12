@@ -700,17 +700,17 @@ function renderCalendar() {
     const target = days[day - 1];
     if (target) target.events.push(event);
   };
-  addEvent(18, { type: 'scout', label: 'Scout', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew + Nate' });
-  addEvent(22, { type: 'prep', label: 'Prep', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew + Nate + Jake' });
-  addEvent(23, { type: 'travel', label: 'Travel', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew' });
-  addEvent(24, { type: 'shoot', label: 'Shoot 1', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew + Nate + Jake' });
-  addEvent(24, { type: 'hold', label: 'Hold', job: 'MJZ / Nike', drone: 'Inspire 3 A', crew: 'Colin', conflict: true });
-  addEvent(25, { type: 'idle', label: 'Idle', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew' });
-  addEvent(26, { type: 'shoot', label: 'Shoot 2', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew + Nate + Jake' });
-  addEvent(27, { type: 'shoot', label: 'Shoot 3', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew + Nate + Jake' });
-  addEvent(28, { type: 'wrap', label: 'Wrap', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew' });
-  addEvent(31, { type: 'hold', label: 'Hold', job: 'MJZ / Nike', drone: 'TBD', crew: 'Colin' });
-  addEvent(32, { type: 'scout', label: 'Scout', job: 'MJZ / Nike', drone: 'TBD', crew: 'Colin' });
+  addEvent(18, { type: 'scout', label: 'Scout', job: 'Radical / Lexus', segment: 'single', resources: [{ kind: 'crew', value: 'Drew + Nate' }, { kind: 'drone', value: 'Inspire 3' }] });
+  addEvent(22, { type: 'prep', label: 'Prep', job: 'Radical / Lexus', segment: 'start', resources: [{ kind: 'crew', value: 'Drew + Nate + Jake' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }] });
+  addEvent(23, { type: 'travel', label: 'Travel', job: 'Radical / Lexus', segment: 'mid', resources: [{ kind: 'crew', value: 'Drew' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }] });
+  addEvent(24, { type: 'shoot', label: 'Shoot 1', job: 'Radical / Lexus', segment: 'mid', resources: [{ kind: 'crew', value: 'Drew + Nate + Jake' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }, { kind: 'gear', value: 'Camera kit' }] });
+  addEvent(24, { type: 'hold', label: 'Hold', job: 'MJZ / Nike', segment: 'single', resources: [{ kind: 'crew', value: 'Colin' }, { kind: 'drone', value: 'Inspire 3 A' }], conflict: true });
+  addEvent(25, { type: 'idle', label: 'Idle', job: 'Radical / Lexus', segment: 'mid', resources: [{ kind: 'crew', value: 'Drew' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }] });
+  addEvent(26, { type: 'shoot', label: 'Shoot 2', job: 'Radical / Lexus', segment: 'mid', resources: [{ kind: 'crew', value: 'Drew + Nate + Jake' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }] });
+  addEvent(27, { type: 'shoot', label: 'Shoot 3', job: 'Radical / Lexus', segment: 'mid', resources: [{ kind: 'crew', value: 'Drew + Nate + Jake' }, { kind: 'drone', value: 'Inspire 3' }, { kind: 'vehicle', value: 'Van 1' }] });
+  addEvent(28, { type: 'wrap', label: 'Wrap', job: 'Radical / Lexus', segment: 'end', resources: [{ kind: 'crew', value: 'Drew' }, { kind: 'vehicle', value: 'Van 1' }, { kind: 'gear', value: 'Returns' }] });
+  addEvent(31, { type: 'hold', label: 'Hold', job: 'MJZ / Nike', segment: 'start', resources: [{ kind: 'crew', value: 'Colin' }, { kind: 'drone', value: 'TBD' }] });
+  addEvent(32, { type: 'scout', label: 'Scout', job: 'MJZ / Nike', segment: 'end', resources: [{ kind: 'crew', value: 'Colin' }, { kind: 'drone', value: 'TBD' }] });
   document.querySelector('#calendar').innerHTML = `
     <div class="page-head">
       <div>
@@ -732,11 +732,12 @@ function renderCalendar() {
           <div class="date-num">${d.label}</div>
           <div class="calendar-events">
             ${d.events.map(event => `
-              <div class="calendar-event ${event.type} ${event.conflict ? 'conflict' : ''}">
+              <div class="calendar-event ${event.type} ${event.segment || 'single'} ${event.segment && event.segment !== 'single' ? 'connected' : ''} ${event.conflict ? 'conflict' : ''}">
                 <div class="calendar-event-top"><span>${event.label}</span>${event.conflict ? '<strong>Overlap</strong>' : ''}</div>
                 <h3>${event.job}</h3>
-                <p><b>Drone</b> ${event.drone}</p>
-                <p><b>Crew</b> ${event.crew}</p>
+                <div class="calendar-resource-chips">
+                  ${event.resources.map(resource => `<span class="${resource.kind}"><b>${resource.kind}</b>${resource.value}</span>`).join('')}
+                </div>
               </div>
             `).join('')}
           </div>
