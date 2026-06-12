@@ -51,6 +51,7 @@ const jobs = [
 
 const screens = [...document.querySelectorAll('.screen')];
 const navs = [...document.querySelectorAll('.nav')];
+const pageParams = new URLSearchParams(window.location.search);
 let activeJob = jobs[0];
 let activeLocationId = 'downtown-rooftop';
 let locationMode = 'overview';
@@ -127,10 +128,34 @@ function badge(status) {
   return `<span class="badge ${cls}">${status}</span>`;
 }
 
+function initials(name) {
+  return name.split(/\s|\+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase();
+}
+
+function jobIcon(job) {
+  return `<span class="job-icon">${initials(`${job.company} ${job.name}`)}</span>`;
+}
+
+function crewCell(crew) {
+  if (crew === 'TBD') return '<span class="muted">TBD</span>';
+  const names = crew.split('+').map(name => name.trim()).filter(Boolean);
+  return `
+    <div class="crew-cell">
+      <div class="avatar-stack">${names.map(name => `<span class="avatar">${initials(name)}</span>`).join('')}</div>
+      <span>${crew}</span>
+    </div>
+  `;
+}
+
 function show(screen) {
   screens.forEach(s => s.classList.toggle('active', s.id === screen));
   navs.forEach(n => n.classList.toggle('active', n.dataset.screen === screen));
   window.scrollTo(0, 0);
+}
+
+function syncThemeButton() {
+  const themeToggle = document.querySelector('[data-theme-toggle]');
+  if (themeToggle) themeToggle.textContent = document.body.dataset.theme === 'dark' ? 'Light Mode' : 'Dark Mode';
 }
 
 function jobRows(group) {
@@ -138,9 +163,9 @@ function jobRows(group) {
     <tr class="click-row" data-open-job="${j.id}">
       <td><strong>${j.date}</strong></td>
       <td>${j.company}</td>
-      <td>${j.name}</td>
+      <td><div class="job-cell">${jobIcon(j)}<div><strong>${j.name}</strong><small>${j.company} / ${j.jobNo}</small></div></div></td>
       <td>${badge(j.status)}</td>
-      <td>${j.crew}</td>
+      <td>${crewCell(j.crew)}</td>
       <td>${j.drone}</td>
       <td>${j.location}</td>
     </tr>
@@ -940,6 +965,13 @@ function bind() {
     const nav = e.target.closest('.nav');
     if (nav) show(nav.dataset.screen);
 
+    const themeToggle = e.target.closest('[data-theme-toggle]');
+    if (themeToggle) {
+      const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.body.dataset.theme = nextTheme;
+      syncThemeButton();
+    }
+
     const openJob = e.target.closest('[data-open-job]');
     if (openJob) {
       activeJob = jobs.find(j => j.id === openJob.dataset.openJob) || jobs[0];
@@ -1019,4 +1051,7 @@ renderResources();
 renderMetrics();
 renderSimple('libraries', 'Libraries');
 renderSimple('settings', 'Settings');
+if (pageParams.get('theme') === 'dark') document.body.dataset.theme = 'dark';
+syncThemeButton();
+if (pageParams.get('screen') && document.getElementById(pageParams.get('screen'))) show(pageParams.get('screen'));
 bind();
