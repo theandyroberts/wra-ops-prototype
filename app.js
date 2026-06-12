@@ -147,6 +147,14 @@ function crewCell(crew) {
   `;
 }
 
+function resourceType(name) {
+  if (/radical|lexus|mjz|nike|amazon|prep|shoot|travel|wrap|idle|hold/i.test(name)) return 'job';
+  if (/drew|nate|jake|colin|tony|pilot|crew/i.test(name)) return 'crew';
+  if (/inspire|alta|drone|aircraft|fpv/i.test(name)) return 'drone';
+  if (/van|vehicle|truck/i.test(name)) return 'vehicle';
+  return 'gear';
+}
+
 function show(screen) {
   screens.forEach(s => s.classList.toggle('active', s.id === screen));
   navs.forEach(n => n.classList.toggle('active', n.dataset.screen === screen));
@@ -739,6 +747,13 @@ function renderResources() {
         <button class="tab ${resourceView === view ? 'active' : ''}" data-resource-view="${view}">${view[0].toUpperCase() + view.slice(1)}</button>
       `).join('')}
     </div>
+    <div class="resource-legend">
+      <span><i class="resource-dot job"></i>Job</span>
+      <span><i class="resource-dot crew"></i>Crew</span>
+      <span><i class="resource-dot drone"></i>Drone</span>
+      <span><i class="resource-dot vehicle"></i>Vehicle</span>
+      <span><i class="resource-dot gear"></i>Gear</span>
+    </div>
     ${resourceView === 'calendar' ? resourceCalendarView() : resourceView === 'timeline' ? resourceTimelineView(dates) : resourceListView()}
   `;
 }
@@ -771,13 +786,13 @@ function resourceCalendarView() {
   };
   const eventsByDay = resourceGroup === 'resource' ? resourceEvents : jobEvents;
   const resourceLanes = [
-    ['Drew Roberts', ['Prep', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', 'Wrap']],
-    ['Nate Labruzza', ['Prep', '', 'Shoot 1', '', 'Shoot 2', 'Shoot 3', '']],
-    ['Jake Capistron', ['Prep', '', 'Shoot 1', '', 'Shoot 2', 'Shoot 3', '']],
-    ['Inspire 3 A', ['Prep', 'Travel', 'Conflict', 'Idle', 'Shoot 2', 'Shoot 3', '']],
-    ['Van 1', ['Prep', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', 'Wrap']],
-    ['Camera kit', ['Prep', '', 'Shoot 1', '', '', '', '']],
-    ['Batteries', ['', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', '']]
+    ['Drew Roberts', 'crew', ['Prep', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', 'Wrap']],
+    ['Nate Labruzza', 'crew', ['Prep', '', 'Shoot 1', '', 'Shoot 2', 'Shoot 3', '']],
+    ['Jake Capistron', 'crew', ['Prep', '', 'Shoot 1', '', 'Shoot 2', 'Shoot 3', '']],
+    ['Inspire 3 A', 'drone', ['Prep', 'Travel', 'Conflict', 'Idle', 'Shoot 2', 'Shoot 3', '']],
+    ['Van 1', 'vehicle', ['Prep', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', 'Wrap']],
+    ['Camera kit', 'gear', ['Prep', '', 'Shoot 1', '', '', '', '']],
+    ['Batteries', 'gear', ['', 'Travel', 'Shoot 1', 'Idle', 'Shoot 2', 'Shoot 3', '']]
   ];
   return `
     <div class="panel">
@@ -797,10 +812,10 @@ function resourceCalendarView() {
         </div>
         ${resourceLanes.map(row => `
           <div class="resource-lane-row">
-            <div class="resource-lane-label">${row[0]}</div>
-            ${row[1].map(item => `
+            <div class="resource-lane-label"><span class="resource-dot ${row[1]}"></span>${row[0]}</div>
+            ${row[2].map(item => `
               <div class="resource-lane-day">
-                ${item ? `<div class="resource-lane-block ${item === 'Conflict' ? 'conflict' : ''}"><strong>${item}</strong><span>${item === 'Conflict' ? 'Radical / Lexus + MJZ / Nike' : 'Radical / Lexus'}</span></div>` : ''}
+                ${item ? `<div class="resource-lane-block ${row[1]} ${item === 'Conflict' ? 'conflict' : ''}"><strong>${item}</strong><span>${item === 'Conflict' ? 'Radical / Lexus + MJZ / Nike' : 'Radical / Lexus'}</span></div>` : ''}
               </div>
             `).join('')}
           </div>
@@ -822,7 +837,7 @@ function resourceCalendarView() {
                   </div>
                   <h3>${event.title}</h3>
                   <div class="resource-item-list">
-                    ${event.items.map(item => `<em>${item}</em>`).join('')}
+                    ${event.items.map(item => `<em class="${resourceType(item)}">${item}</em>`).join('')}
                   </div>
                 </div>
               `).join('')}

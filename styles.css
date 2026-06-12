@@ -11,6 +11,11 @@
   --warn: #b9781f;
   --danger: #be3b32;
   --ok: #16845c;
+  --job-color: #1786a3;
+  --crew-color: #6f63d9;
+  --drone-color: #1f9e73;
+  --vehicle-color: #cf7b20;
+  --gear-color: #7a8798;
   --sidebar: #121a24;
   --sidebar-2: #1b2835;
   --shadow: 0 14px 34px rgba(22, 37, 54, .08);
@@ -31,6 +36,11 @@ body[data-theme="dark"] {
   --warn: #e6a84f;
   --danger: #ff7a70;
   --ok: #47c990;
+  --job-color: #38a8c7;
+  --crew-color: #9a8cff;
+  --drone-color: #4bd19b;
+  --vehicle-color: #f0a94d;
+  --gear-color: #a7b3c3;
   --sidebar: #090d13;
   --sidebar-2: #17202b;
   --shadow: 0 16px 40px rgba(0, 0, 0, .28);
@@ -770,6 +780,27 @@ h3 {
   overflow-x: auto;
 }
 
+.resource-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: -6px 0 16px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.resource-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow: var(--shadow-soft);
+}
+
 .resource-calendar {
   min-width: 1220px;
 }
@@ -810,11 +841,39 @@ h3 {
 }
 
 .resource-lane-label {
-  display: grid;
+  display: flex;
   align-items: center;
+  gap: 8px;
   color: var(--ink);
   background: var(--panel-2);
   font-weight: 850;
+}
+
+.resource-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--gear-color);
+}
+
+.resource-dot.job {
+  background: var(--job-color);
+}
+
+.resource-dot.crew {
+  background: var(--crew-color);
+}
+
+.resource-dot.drone {
+  background: var(--drone-color);
+}
+
+.resource-dot.vehicle {
+  background: var(--vehicle-color);
+}
+
+.resource-dot.gear {
+  background: var(--gear-color);
 }
 
 .resource-lane-day {
@@ -828,10 +887,35 @@ h3 {
   display: grid;
   gap: 3px;
   padding: 7px 8px;
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid var(--gear-color);
   border-radius: 6px;
-  background: var(--accent-soft);
+  background: color-mix(in srgb, var(--gear-color) 13%, var(--panel));
   font-size: 12px;
+}
+
+.resource-lane-block.job {
+  border-left-color: var(--job-color);
+  background: color-mix(in srgb, var(--job-color) 13%, var(--panel));
+}
+
+.resource-lane-block.crew {
+  border-left-color: var(--crew-color);
+  background: color-mix(in srgb, var(--crew-color) 13%, var(--panel));
+}
+
+.resource-lane-block.drone {
+  border-left-color: var(--drone-color);
+  background: color-mix(in srgb, var(--drone-color) 13%, var(--panel));
+}
+
+.resource-lane-block.vehicle {
+  border-left-color: var(--vehicle-color);
+  background: color-mix(in srgb, var(--vehicle-color) 13%, var(--panel));
+}
+
+.resource-lane-block.gear {
+  border-left-color: var(--gear-color);
+  background: color-mix(in srgb, var(--gear-color) 13%, var(--panel));
 }
 
 .resource-lane-block strong {
@@ -944,6 +1028,31 @@ h3 {
   font-size: 11px;
   font-style: normal;
   font-weight: 750;
+}
+
+.resource-item-list em.job {
+  border-color: color-mix(in srgb, var(--job-color) 45%, var(--line));
+  background: color-mix(in srgb, var(--job-color) 14%, var(--panel));
+}
+
+.resource-item-list em.crew {
+  border-color: color-mix(in srgb, var(--crew-color) 45%, var(--line));
+  background: color-mix(in srgb, var(--crew-color) 14%, var(--panel));
+}
+
+.resource-item-list em.drone {
+  border-color: color-mix(in srgb, var(--drone-color) 45%, var(--line));
+  background: color-mix(in srgb, var(--drone-color) 14%, var(--panel));
+}
+
+.resource-item-list em.vehicle {
+  border-color: color-mix(in srgb, var(--vehicle-color) 45%, var(--line));
+  background: color-mix(in srgb, var(--vehicle-color) 14%, var(--panel));
+}
+
+.resource-item-list em.gear {
+  border-color: color-mix(in srgb, var(--gear-color) 45%, var(--line));
+  background: color-mix(in srgb, var(--gear-color) 14%, var(--panel));
 }
 
 .resource-schedule {
