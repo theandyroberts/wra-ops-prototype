@@ -692,39 +692,54 @@ function archiveTab() {
 
 function renderCalendar() {
   const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const days = [
-    ['22', 'PREP', 'start', 'Radical / Lexus'],
-    ['23', 'TRAVEL', 'mid', 'Radical / Lexus'],
-    ['24', 'SHOOT 1', 'mid', 'Radical / Lexus'],
-    ['25', 'IDLE', 'mid', 'Radical / Lexus'],
-    ['26', 'SHOOT 2', 'mid', 'Radical / Lexus'],
-    ['27', 'SHOOT 3', 'mid', 'Radical / Lexus'],
-    ['28', 'WRAP', 'end', 'Radical / Lexus'],
-    ['29', '', ''],
-    ['30', '', ''],
-    ['1', 'HOLD', 'start', 'MJZ / Nike'],
-    ['2', 'SCOUT', 'end', 'MJZ / Nike'],
-    ['3', '', ''],
-    ['4', '', ''],
-    ['5', '', '']
-  ];
+  const days = Array.from({ length: 35 }, (_, index) => {
+    const day = index + 1;
+    return { day, muted: day > 30, label: day > 30 ? String(day - 30) : String(day), events: [] };
+  });
+  const addEvent = (day, event) => {
+    const target = days[day - 1];
+    if (target) target.events.push(event);
+  };
+  addEvent(18, { type: 'scout', label: 'Scout', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew + Nate' });
+  addEvent(22, { type: 'prep', label: 'Prep', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew + Nate + Jake' });
+  addEvent(23, { type: 'travel', label: 'Travel', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew' });
+  addEvent(24, { type: 'shoot', label: 'Shoot 1', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew + Nate + Jake' });
+  addEvent(24, { type: 'hold', label: 'Hold', job: 'MJZ / Nike', drone: 'Inspire 3 A', crew: 'Colin', conflict: true });
+  addEvent(25, { type: 'idle', label: 'Idle', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew' });
+  addEvent(26, { type: 'shoot', label: 'Shoot 2', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew + Nate + Jake' });
+  addEvent(27, { type: 'shoot', label: 'Shoot 3', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew + Nate + Jake' });
+  addEvent(28, { type: 'wrap', label: 'Wrap', job: 'Radical / Lexus', drone: 'Inspire 3', crew: 'Drew' });
+  addEvent(31, { type: 'hold', label: 'Hold', job: 'MJZ / Nike', drone: 'TBD', crew: 'Colin' });
+  addEvent(32, { type: 'scout', label: 'Scout', job: 'MJZ / Nike', drone: 'TBD', crew: 'Colin' });
   document.querySelector('#calendar').innerHTML = `
     <div class="page-head">
       <div>
-        <p class="eyebrow">Month default</p>
+        <p class="eyebrow">June 2026</p>
         <h1>Calendar</h1>
-        <p class="sub">Connected job blocks with day-type tags. External edits require review.</p>
+        <p class="sub">Full month context with job, drone type, crew, and day-type color visible in each block.</p>
       </div>
       <div class="actions"><button class="btn primary">Month</button><button class="btn">Week</button><button class="btn">Agenda</button></div>
+    </div>
+    <div class="calendar-legend">
+      ${['scout','prep','travel','shoot','idle','wrap','hold'].map(type => `<span><i class="${type}"></i>${type}</span>`).join('')}
     </div>
     <div class="month-weekdays">
       ${weekdays.map(d => `<div>${d}</div>`).join('')}
     </div>
     <div class="month-grid">
-      ${days.map((d, i) => `
-        <div class="month-day">
-          <div class="date-num">${d[0]}</div>
-          ${d[1] ? `<div class="bar ${d[2]}"><span class="day-tag">${d[1]}</span><br>${d[3]}</div>` : ''}
+      ${days.map(d => `
+        <div class="month-day ${d.muted ? 'muted-day' : ''}">
+          <div class="date-num">${d.label}</div>
+          <div class="calendar-events">
+            ${d.events.map(event => `
+              <div class="calendar-event ${event.type} ${event.conflict ? 'conflict' : ''}">
+                <div class="calendar-event-top"><span>${event.label}</span>${event.conflict ? '<strong>Overlap</strong>' : ''}</div>
+                <h3>${event.job}</h3>
+                <p><b>Drone</b> ${event.drone}</p>
+                <p><b>Crew</b> ${event.crew}</p>
+              </div>
+            `).join('')}
+          </div>
         </div>
       `).join('')}
     </div>
