@@ -163,7 +163,7 @@ function show(screen) {
 
 function syncThemeButton() {
   const themeToggle = document.querySelector('[data-theme-toggle]');
-  if (themeToggle) themeToggle.textContent = document.body.dataset.theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+  if (themeToggle) themeToggle.textContent = document.body.dataset.theme === 'dark' ? 'Light' : 'Dark';
 }
 
 function jobRows(group) {
@@ -1002,6 +1002,7 @@ function bind() {
     if (themeToggle) {
       const nextTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
       document.body.dataset.theme = nextTheme;
+      window.localStorage.setItem('wra-theme', nextTheme);
       syncThemeButton();
     }
 
@@ -1075,6 +1076,11 @@ function bind() {
   });
 }
 
+const savedTheme = window.localStorage.getItem('wra-theme');
+if (pageParams.get('theme') === 'dark') document.body.dataset.theme = 'dark';
+else if (savedTheme === 'dark') document.body.dataset.theme = 'dark';
+else document.body.dataset.theme = 'light';
+
 renderHome();
 renderJobs();
 renderNewJob();
@@ -1084,7 +1090,6 @@ renderResources();
 renderMetrics();
 renderSimple('libraries', 'Libraries');
 renderSimple('settings', 'Settings');
-if (pageParams.get('theme') === 'dark') document.body.dataset.theme = 'dark';
 syncThemeButton();
 if (pageParams.get('screen') && document.getElementById(pageParams.get('screen'))) show(pageParams.get('screen'));
 bind();
