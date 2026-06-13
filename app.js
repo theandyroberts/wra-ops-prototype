@@ -327,38 +327,121 @@ function renderJob() {
 }
 
 function jobOverview(j) {
+  const crew = [
+    { name: 'Drew Roberts', role: 'Pilot', status: 'Confirmed' },
+    { name: 'Nate Labruzza', role: '1st AC / Drone Tech', status: 'Holding' },
+    { name: 'Jake Capistron', role: 'Camera Operator', status: 'Holding' }
+  ];
+  const dateBlocks = [
+    { type: 'Scout', date: 'Jun 18', detail: 'Location scout' },
+    { type: 'Prep', date: 'Jun 22', detail: 'Drone package prep' },
+    { type: 'Travel', date: 'Jun 23 / Jun 28', detail: 'Crew and gear movement' },
+    { type: 'Shoot', date: 'Jun 24, Jun 26, Jun 27', detail: 'Three shoot days' }
+  ];
+  const resources = [
+    { type: 'Drone', value: 'Inspire 3' },
+    { type: 'Vehicle', value: 'Van 1' },
+    { type: 'Gear', value: 'Camera kit + batteries' }
+  ];
   return `
-    <div class="grid two">
-      <div class="panel">
-        <div class="panel-head"><h2>Core Info</h2></div>
-        <div class="panel-body">
-          <p><strong>Production:</strong> ${j.company}</p>
-          <p><strong>Job:</strong> ${j.name}</p>
-          <p><strong>Status:</strong> ${j.status}</p>
-          <p><strong>Estimate:</strong> QB-1234 / $12,500</p>
-          <p><strong>PO:</strong> Pending</p>
+    <div class="job-overview">
+      <div class="job-summary-card">
+        <div class="job-summary-main">
+          <span class="job-icon job-icon-lg">${initials(`${j.company} ${j.name}`)}</span>
+          <div>
+            <p class="eyebrow">Job Snapshot</p>
+            <h2>${j.company} / ${j.name}</h2>
+            <p class="sub">Commercial · Job #${j.jobNo} · Estimate QB-1234 / $12,500 · PO pending</p>
+          </div>
+        </div>
+        <div class="job-summary-status">
+          ${badge(j.status)}
+          <span class="snapshot-chip">Drone ${j.drone}</span>
+          <span class="snapshot-chip">Downtown LA</span>
         </div>
       </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Actions</h2></div>
-        <div class="panel-body actions">
-          <button class="btn">Assign Job Number</button>
-          <button class="btn">Generate Job Notes</button>
-          <button class="btn">Create POA</button>
-          <button class="btn">Generate Pilot Email</button>
+
+      <div class="overview-grid">
+        <div class="panel overview-panel crew-panel">
+          <div class="panel-head"><h2>Crew</h2><button class="btn" data-job-tab-link="crew">Open Crew</button></div>
+          <div class="panel-body">
+            <div class="crew-roster">
+              ${crew.map(person => `
+                <div class="crew-card">
+                  <span class="avatar avatar-lg">${initials(person.name)}</span>
+                  <div>
+                    <strong>${person.name}</strong>
+                    <span>${person.role}</span>
+                  </div>
+                  ${badge(person.status)}
+                </div>
+              `).join('')}
+            </div>
+            <div class="overview-note">
+              <strong>Paperwork coverage:</strong> Drew Roberts, Colin Burgess, Tony Thompson · Inspire 3 x3
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Dates</h2></div>
-        <div class="panel-body">
-          <p>Scout: Jun 18</p><p>Prep: Jun 22</p><p>Shoot: Jun 24, Jun 26, Jun 27</p><p>Travel: Jun 23, Jun 28</p>
+
+        <div class="panel overview-panel dates-panel">
+          <div class="panel-head"><h2>Date Blocks</h2><button class="btn" data-job-tab-link="dates">Open Dates</button></div>
+          <div class="panel-body">
+            <div class="date-block-grid">
+              ${dateBlocks.map(block => `
+                <div class="date-block-card ${block.type.toLowerCase()}">
+                  <span>${block.type}</span>
+                  <strong>${block.date}</strong>
+                  <small>${block.detail}</small>
+                </div>
+              `).join('')}
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h2>Locations / Airspace</h2></div>
-        <div class="panel-body">
-          <p>Downtown Rooftop · <span class="badge warn">Needs LAANC</span> · POA Draft</p>
-          <p>Pasadena Bridge · <span class="badge ok">Clear</span> · POA Not Started</p>
+
+        <div class="panel overview-panel location-panel">
+          <div class="panel-head"><h2>Locations / Airspace</h2><button class="btn" data-job-tab-link="locations">Open Locations</button></div>
+          <div class="panel-body">
+            <div class="overview-location">
+              <div>
+                <h3>Downtown Rooftop</h3>
+                <p class="muted">123 Main St, Los Angeles, CA · 34.0522, -118.2437</p>
+                <div class="location-meta">${badge('Needs LAANC')} ${badge('POA Draft')} ${badge('Docs Pending')}</div>
+              </div>
+              <div class="map map-small-card">Primary map</div>
+            </div>
+            <div class="overview-location compact">
+              <div>
+                <h3>Pasadena Bridge</h3>
+                <p class="muted">Pasadena, CA · POA not started</p>
+              </div>
+              ${badge('Clear')}
+            </div>
+          </div>
+        </div>
+
+        <div class="panel overview-panel resource-panel">
+          <div class="panel-head"><h2>Package / Status</h2><button class="btn" data-screen-link="resources">Open Resources</button></div>
+          <div class="panel-body">
+            <div class="resource-pill-grid">
+              ${resources.map(resource => `<span class="resource-summary-pill ${resource.type.toLowerCase()}"><i></i><strong>${resource.type}</strong>${resource.value}</span>`).join('')}
+            </div>
+            <div class="overview-status-list">
+              <span>${badge('Docs On Location Side')}</span>
+              <span>${badge('Docs On Prod Side')}</span>
+              <span>${badge('Calendar Synced')}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel overview-panel action-panel">
+          <div class="panel-head"><h2>Next Actions</h2></div>
+          <div class="panel-body action-grid">
+            <button class="btn">Generate Job Notes</button>
+            <button class="btn">Upload Paperwork</button>
+            <button class="btn">Create POA</button>
+            <button class="btn">Generate Pilot Email</button>
+            <button class="btn dark">Export Packet</button>
+          </div>
         </div>
       </div>
     </div>

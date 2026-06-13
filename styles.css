@@ -1951,6 +1951,272 @@ body[data-theme="dark"] .btn {
   background: linear-gradient(90deg, var(--accent-2), var(--accent), #74c5d1);
 }
 
+.job-overview {
+  display: grid;
+  gap: 16px;
+}
+
+.job-summary-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  color: #f7fbff;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .12), transparent 42%),
+    radial-gradient(circle at 88% 12%, rgba(116, 197, 209, .28), transparent 34%),
+    linear-gradient(135deg, #101722 0%, #17384b 52%, #157a8e 100%);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.job-summary-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.job-summary-card .eyebrow,
+.job-summary-card .sub {
+  color: rgba(235, 246, 252, .74);
+}
+
+.job-summary-card h2 {
+  color: #fff;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.05;
+}
+
+.job-icon-lg {
+  width: 68px;
+  height: 68px;
+  flex-basis: 68px;
+  border-radius: 12px;
+  font-size: 18px;
+}
+
+.job-summary-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.snapshot-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 9px;
+  color: #eaf8fb;
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+  gap: 16px;
+}
+
+.overview-panel {
+  min-height: 100%;
+}
+
+.crew-panel,
+.location-panel {
+  grid-row: span 2;
+}
+
+.crew-roster {
+  display: grid;
+  gap: 10px;
+}
+
+.crew-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.crew-card strong,
+.crew-card span {
+  display: block;
+}
+
+.crew-card span:not(.avatar):not(.badge) {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.avatar-lg {
+  width: 38px;
+  height: 38px;
+  margin-right: 0;
+  font-size: 12px;
+}
+
+.overview-note {
+  margin-top: 12px;
+  padding: 10px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--accent-soft) 68%, var(--panel));
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--line));
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.overview-note strong {
+  color: var(--ink);
+}
+
+.date-block-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.date-block-card {
+  display: grid;
+  gap: 4px;
+  padding: 11px;
+  border-left: 4px solid var(--accent);
+  background: var(--panel-2);
+  border-radius: 8px;
+}
+
+.date-block-card span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.date-block-card strong {
+  font-size: 17px;
+}
+
+.date-block-card small {
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.date-block-card.scout {
+  border-left-color: var(--crew-color);
+}
+
+.date-block-card.travel {
+  border-left-color: var(--vehicle-color);
+}
+
+.date-block-card.shoot {
+  border-left-color: var(--drone-color);
+}
+
+.overview-location {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px;
+  gap: 14px;
+  align-items: stretch;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.overview-location h3 {
+  margin-bottom: 4px;
+  font-size: 17px;
+}
+
+.overview-location.compact {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  margin-top: 12px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.map-small-card {
+  min-height: 112px;
+  min-width: 0;
+}
+
+.resource-pill-grid,
+.overview-status-list {
+  display: grid;
+  gap: 8px;
+}
+
+.resource-summary-pill {
+  display: grid;
+  grid-template-columns: auto 74px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.resource-summary-pill i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--gear-color);
+}
+
+.resource-summary-pill strong {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.resource-summary-pill.drone i {
+  background: var(--drone-color);
+}
+
+.resource-summary-pill.vehicle i {
+  background: var(--vehicle-color);
+}
+
+.resource-summary-pill.gear i {
+  background: var(--gear-color);
+}
+
+.overview-status-list {
+  margin-top: 12px;
+}
+
+.overview-status-list span {
+  display: block;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.action-grid .btn.dark {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 980px) {
   .app {
     grid-template-columns: 1fr;
@@ -2004,5 +2270,30 @@ body[data-theme="dark"] .btn {
   .month-weekdays,
   .month-grid {
     min-width: 900px;
+  }
+
+  .job-summary-card,
+  .job-summary-main,
+  .overview-location {
+    display: grid;
+  }
+
+  .job-summary-status {
+    justify-content: flex-start;
+  }
+
+  .overview-grid,
+  .date-block-grid,
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .crew-panel,
+  .location-panel {
+    grid-row: auto;
+  }
+
+  .action-grid .btn.dark {
+    grid-column: auto;
   }
 }
